@@ -1,0 +1,14 @@
+# Ignore Terraform state files (sensitive)
+terraform.tfstate
+terraform.tfstate.backup
+
+# Ignore local variable overrides (may contain secrets)
+*.tfvars
+override.tf
+override.tf.json
+
+# Ignore crash logs
+crash.log
+
+# Ignore Terraform plugin directory
+.terraform/

@@ -1,0 +1,41 @@
+# ---------- Build Stage ----------
+FROM golang:1.24-alpine AS builder
+
+WORKDIR /app
+
+# Download Go module dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the Go binary (main.go is in download/)
+RUN go build -o app-base ./download/main.go
+
+# ---------- Runtime Stage ----------
+FROM alpine:3.18
+
+WORKDIR /app
+
+# Install dependencies: bash, curl, python3, pip, aws-cli tzdata
+RUN apk add --no-cache bash curl python3 py3-pip aws-cli tzdata git ffmpeg
+
+# Install yt-dlp via pip
+#RUN pip3 install --no-cache-dir yt-dlp
+
+# Install yt-dlp via development branch
+RUN git clone -b feat/youtube/sabr https://github.com/coletdjnz/yt-dlp-dev && \
+    cd yt-dlp-dev && \
+    python3 -m pip install --force-reinstall . && \
+    cd .. && rm -rf yt-dlp-dev
+
+
+# Copy Go binary from builder
+COPY --from=builder /app/app-base ./app-base
+
+# Copy cookies file into image
+COPY ./download/cookies_fpt_phong ./download/cookies_fpt_phong
+
+# Set entrypoint
+ENTRYPOINT ["/app/app-base"]

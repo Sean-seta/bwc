@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-downloader
+  namespace: video-processing
+  labels:
+    app: video-downloader
+spec:
+  replicas: 100
+  selector:
+    matchLabels:
+      app: video-downloader
+  template:
+    metadata:
+      labels:
+        app: video-downloader
+    spec:
+      containers:
+        - name: downloader
+          image: hoanghs120/download:v3
+          imagePullPolicy: Always
+          env:
+            - name: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+            - name: AWS_REGION
+              value: "us-west-1"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"  # should be < node memory
+      volumes:
+        - name: cookies-volume
+          configMap:
+            name: downloader-cookies

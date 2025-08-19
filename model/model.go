@@ -3,15 +3,13 @@ package model
 import "time"
 
 type Video struct {
-	ID       string `json:"id"`
-	Title    string
-	URL      string      `json:"url"`
-	Height   int         `json:"height"`
-	Duration string      `json:"duration"`
-	Prefix   VideoPrefix `json:"prefix"`
-	Status   VideoStatus `json:"status" default:"pending"`
-	StartAt  time.Time   `json:"start_at"`
-	EndAt    time.Time   `json:"end_at"`
+	ID      int64       `json:"id" gorm:"primaryKey;autoIncrement"`
+	URL     string      `json:"url"`
+	Version string      `json:"version"` // v1: add _v2, v2: keep logic
+	Prefix  VideoPrefix `json:"prefix"`
+	Status  VideoStatus `json:"status" default:"pending"`
+	StartAt time.Time   `json:"start_at"`
+	EndAt   time.Time   `json:"end_at"`
 }
 
 func (v Video) TableName() string {

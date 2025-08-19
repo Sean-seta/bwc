@@ -6,18 +6,18 @@ metadata:
   labels:
     app: video-downloader
 spec:
-  replicas: 100
+  replicas: 88
   selector:
     matchLabels:
-      app: video-downloader
+      app: video-downloader-by-channel
   template:
     metadata:
       labels:
-        app: video-downloader
+        app: video-downloader-by-channel
     spec:
       containers:
-        - name: downloader
-          image: hoanghs120/download:v3
+        - name: video-downloader-by-channel
+          image: hoanghs120/download_by_channel:v6
           imagePullPolicy: Always
           env:
             - name: AWS_ACCESS_KEY_ID
@@ -29,9 +29,5 @@ spec:
               cpu: "500m"
               memory: "1Gi"
             limits:
-              cpu: "1"
-              memory: "2Gi"  # should be < node memory
-      volumes:
-        - name: cookies-volume
-          configMap:
-            name: downloader-cookies
+              cpu: "3"
+              memory: "3Gi"  # should be < node memory

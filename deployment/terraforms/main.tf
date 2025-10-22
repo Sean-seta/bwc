@@ -15,12 +15,12 @@ provider "google" {
 
 # ---- VPC & Subnet ----
 resource "google_compute_network" "vpc" {
-  name                    = "bwc-vpc"
+  name                    = "segment-vpc"
   auto_create_subnetworks = false
 }
 
 resource "google_compute_subnetwork" "subnet" {
-  name          = "bwc-subnet"
+  name          = "segment-subnet"
   ip_cidr_range = "10.0.0.0/16"
   region        = var.region
   network       = google_compute_network.vpc.id
@@ -28,7 +28,7 @@ resource "google_compute_subnetwork" "subnet" {
 
 # ---- GKE Cluster ----
 resource "google_container_cluster" "primary" {
-  name     = "bwc-cluster"
+  name     = "segment-cluster"
   location = var.zone
 
   network    = google_compute_network.vpc.name
@@ -43,11 +43,11 @@ resource "google_container_cluster" "primary" {
 
 # ---- Node Pool ----
 resource "google_container_node_pool" "primary_nodes" {
-  name     = "bwc-node-pool"
+  name     = "segment-node-pool"
   location = var.zone
   cluster  = google_container_cluster.primary.name
 
-  node_count = 50
+  node_count = 20
 
   node_config {
     machine_type = "e2-standard-4"
@@ -58,7 +58,7 @@ resource "google_container_node_pool" "primary_nodes" {
     labels = {
       env = "dev"
     }
-    tags = ["bwc-node"]
+    tags = ["segment-node"]
   }
 }
 
@@ -67,8 +67,8 @@ variable "project_id" {
   default = "project-vdr-bwc"
 }
 variable "region" {
-  default = "us-central1"
+  default = "asia-southeast1"
 }
 variable "zone" {
-  default = "us-central1-a"
+  default = "asia-southeast1"
 }
